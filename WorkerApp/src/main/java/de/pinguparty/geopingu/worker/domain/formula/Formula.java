@@ -61,7 +61,7 @@ public class Formula {
     }
 
 
-    public List<String> getVariables() {
+    public List<Variable> getVariables() {
         //TODO
         return List.of();
     }
@@ -71,7 +71,7 @@ public class Formula {
         return null;
     }
 
-    public void setVariable(String name, String value) {
+    public void setVariable(String name, Literal value) {
         //TODO
     }
 
