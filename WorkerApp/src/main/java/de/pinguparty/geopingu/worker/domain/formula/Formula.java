@@ -61,7 +61,7 @@ public class Formula {
     }
 
 
-    public List<Variable> getVariables() {
+    public List<String> getVariables() {
         //TODO
         return List.of();
     }
@@ -207,11 +207,11 @@ public class Formula {
 
             //Check whether token is quotation marks at the beginning of a String
             if (Character.toString(currentCharacter).equals(STRING_VALUE)) {
-                if (!currentToken.isEmpty() && currentToken.toString().matches("\"[a-zA-Z]+")) {
+                if (currentToken.length() != 0 && currentToken.toString().matches("\"[a-zA-Z]+")) {
                     currentToken.append(currentCharacter);
                     tokens.add(currentToken.toString());
                     currentToken.setLength(0);
-                } else if (currentToken.isEmpty()) {
+                } else if (currentToken.length() == 0) {
                     currentToken.append(currentCharacter);
                 } else {
                     tokens.add(currentToken.toString());
@@ -224,7 +224,7 @@ public class Formula {
             //Check whether token is decimal separator
             if (Character.toString(currentCharacter).equals(DECIMAL_SEPARATOR)) {
                 if (!isCurrentTokenNumeric) {
-                    throw new IllegalFormulaSyntaxException("The '%s' character is only allowed within numbers.".formatted(DECIMAL_SEPARATOR));
+                    throw new IllegalFormulaSyntaxException(String.format("The '%s' character is only allowed within numbers.", DECIMAL_SEPARATOR));
                 }
                 currentToken.append(currentCharacter);
                 continue;
@@ -232,11 +232,11 @@ public class Formula {
 
             //If the character is alphanumeric or numeric, it may be part of a larger token
             if (Character.isDigit(currentCharacter)) {
-                if (currentToken.isEmpty()) isCurrentTokenNumeric = true;
+                if (currentToken.length() == 0) isCurrentTokenNumeric = true;
                 currentToken.append(currentCharacter);
                 continue;
             } else if (Character.isAlphabetic(currentCharacter)) {
-                if ((!currentToken.isEmpty()) && isCurrentTokenNumeric)
+                if ((currentToken.length() != 0) && isCurrentTokenNumeric)
                     throw new IllegalFormulaSyntaxException("Numbers must not contain letters.");
                 currentToken.append(currentCharacter);
                 isCurrentTokenNumeric = false;
@@ -244,14 +244,14 @@ public class Formula {
             }
 
             //Character is special character, so it is a separate token and finishes the previous token (if existing)
-            if (!currentToken.isEmpty()) tokens.add(currentToken.toString());
+            if (currentToken.length() != 0) tokens.add(currentToken.toString());
             tokens.add(Character.toString(currentCharacter));
             isCurrentTokenNumeric = false;
             currentToken.setLength(0);
         }
 
         //Check whether the current token still contains characters
-        if (!currentToken.isEmpty()) tokens.add(currentToken.toString());
+        if (currentToken.length() != 0) tokens.add(currentToken.toString());
 
         return tokens;
     }
