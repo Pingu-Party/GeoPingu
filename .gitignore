@@ -1,0 +1,17 @@
+# Volume directory
+volumes
+
+# Secret files
+.env
+
+# Build files
+build
+
+# IntelliJ
+.idea
+
+# Gradle
+.gradle
+gradle
+gradlew
+gradlew.bat

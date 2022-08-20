@@ -1,0 +1,85 @@
+version: '3'
+
+services:
+
+    ####################################################################################################################
+    # BotApp container                                                                                                 #
+    ####################################################################################################################
+    bot:
+        container_name: bot
+        build: ./BotApp
+        restart: on-failure
+        environment:
+            BOT_TELEGRAM_TOKEN: "${BOT_TELEGRAM_TOKEN}"
+            BOT_TELEGRAM_NAME: "${BOT_TELEGRAM_NAME}"
+            BOT_QUEUE_MESSAGES: userMessages
+            BOT_QUEUE_ACTIONS: botActions
+            BOT_RABBITMQ_HOST: rabbitmq
+            BOT_RABBITMQ_PORT: 5672
+            BOT_RABBITMQ_USERNAME: user
+            BOT_RABBITMQ_PASSWORD: 12345
+        depends_on:
+            - rabbitmq
+        links:
+            - rabbitmq
+        ports:
+            - "8080:8080"
+
+    ####################################################################################################################
+    # WorkerApp containers                                                                                             #
+    ####################################################################################################################
+    worker:
+        container_name: worker
+        build: ./WorkerApp
+        restart: on-failure
+        environment:
+            WORKER_MONGODB_HOST: mongodb
+            WORKER_MONGODB_PORT: 27017
+            WORKER_MONGODB_USERNAME: root
+            WORKER_MONGODB_PASSWORD: 12345
+            WORKER_QUEUE_MESSAGES: userMessages
+            WORKER_QUEUE_ACTIONS: botActions
+            WORKER_RABBITMQ_HOST: rabbitmq
+            WORKER_RABBITMQ_PORT: 5672
+            WORKER_RABBITMQ_USERNAME: user
+            WORKER_RABBITMQ_PASSWORD: 12345
+        depends_on:
+            - mongodb
+            - rabbitmq
+        links:
+            - mongodb
+            - rabbitmq
+        ports:
+            - "5005:5005"
+            - "8081:8080"
+
+    ####################################################################################################################
+    # RabbitMQ container                                                                                               #
+    ####################################################################################################################
+    rabbitmq:
+        container_name: rabbitmq
+        image: rabbitmq:3-management-alpine
+        hostname: rabbitmq
+        restart: on-failure
+        environment:
+            RABBITMQ_DEFAULT_USER: user
+            RABBITMQ_DEFAULT_PASS: 12345
+        ports:
+            - 5672:5672
+            - 15672:15672
+
+    ####################################################################################################################
+    # MongoDB container                                                                                                #
+    ####################################################################################################################
+    mongodb:
+        container_name: mongodb
+        image: amd64/mongo:5
+        hostname: mongodb
+        restart: on-failure
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: 12345
+        ports:
+            - "27017:27017"
+        volumes:
+            - ./volumes/data:/data/db
