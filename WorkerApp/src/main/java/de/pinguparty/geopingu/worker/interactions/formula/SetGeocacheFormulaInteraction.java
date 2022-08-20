@@ -54,7 +54,7 @@ public class SetGeocacheFormulaInteraction implements Interaction {
      */
     @Override
     public String getStartCommand() {
-        return "list";
+        return "setformula";
     }
 
     /**
